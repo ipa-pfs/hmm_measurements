@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="name" default="test_data.txt"/>
+  <arg name="mean_name" default="test_data_mean.txt"/>
+  <arg name="robot_id" default=""/>
+
+  <!--group ns="$(arg robot_id)"-->    
+    <node name="measure" pkg="hmm_measurements" type="hmm_measure" output="screen" >
+      <param name="measure_path" type="string" value="$(find hmm_measurements)/yaml"/>
+      <param name="file_name" type="string" value="$(arg name)"/>
+      <param name="mean_file_name" type="string" value="$(arg mean_name)"/>
+      <param name="count_max" type="int" value="10000"/>
+      <param name="tf_prefix" type="str" value="$(arg robot_id)" />
+    </node>
+  <!--/group-->
+
+</launch>
