@@ -103,6 +103,7 @@ int main(int argc, char **argv)
 
   int count = 0;
   float sum_r = 0;
+  std::vector<float> r_vec;
   while (ros::ok())
   {
 
@@ -126,6 +127,8 @@ int main(int argc, char **argv)
     ROS_INFO_STREAM("trans_x: " << trans_x << " trans_y: " << trans_y);
 
     float r = std::sqrt((trans_x - gt_x)*(trans_x - gt_x)+(trans_y - gt_y)*(trans_y - gt_y));
+    if (std::isinf(r))
+        continue;
     sum_r += r;
     float err_y = fabs(trans_y-gt_y);
     ROS_INFO_STREAM("R: " << r );
@@ -133,6 +136,7 @@ int main(int argc, char **argv)
     //log << err_y << std::endl;
     log << r << std::endl;
     ++count;
+    r_vec.push_back(r);
     ROS_INFO_STREAM(count);
     if (count_max == count)
     {
@@ -154,7 +158,11 @@ int main(int argc, char **argv)
     }
   }
 
-  mean_file <<sum_r/count<<std::endl;
+  mean_file <<"mean: "<<sum_r/count<<std::endl;
+  float max_element = *(std::max_element(r_vec.begin(),(r_vec.end()-1)));
+  float min_element = *(std::min_element(r_vec.begin(),(r_vec.end()-1)));
+  mean_file <<"max_element: "<<max_element<<std::endl;
+  mean_file <<"min_element: "<<min_element<<std::endl;
   mean_file.close();
   return 0;
 }

@@ -4,7 +4,7 @@ import rospy
 
 import psutil
 import os
-
+import rospkg
 from optparse import OptionParser
 
 def getProcessIDs(name):
@@ -50,10 +50,14 @@ if __name__ == '__main__':
         mem = mem + process.get_memory_percent()
         count = count + 1
         if (count%10 == 0):
-            file = open('/home/srd-ps/git/atf_ws/src/hmm_measurements/yaml/' + file_name + '.txt','w+')
+            rospack = rospkg.RosPack()
+            rospack.list()
+            path =rospack.get_path("hmm_measurements")
+            path = path + "/yaml/"
+            file = open(path + file_name + '.txt','w+')
             print "average CPU percentage is: " + str(cpu/count)
             print "average Memory percentage is: " + str(mem/count)
-            file.write("cpu_mean"+str(cpu/count));
+            file.write("cpu_mean"+str(cpu/count)+"\n");
             file.write("mem_mean"+str(mem/count));
             file.close()
 
