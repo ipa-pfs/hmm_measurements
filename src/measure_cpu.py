@@ -6,12 +6,14 @@ import psutil
 import os
 import rospkg
 from optparse import OptionParser
+from datetime import datetime
 
 def getProcessIDs(name):
     proc_id = 0
     for proc in psutil.process_iter():
         try:
-            if name in proc.name:
+            print(proc.name())
+            if name == proc.name():
                 proc_id = proc.pid
         except psutil.NoSuchProcess:
             pass
@@ -46,19 +48,24 @@ if __name__ == '__main__':
 
     while not rospy.is_shutdown():
         rate.sleep()
-        cpu = cpu + process.get_cpu_percent()
-        mem = mem + process.get_memory_percent()
+        cpu = cpu + process.cpu_percent()
+        mem = mem + process.memory_percent()
         count = count + 1
         if (count%10 == 0):
             rospack = rospkg.RosPack()
             rospack.list()
-            path =rospack.get_path("hmm_measurements")
-            path = path + "/yaml/"
-            file = open(path + file_name + '.txt','w+')
+            #path =rospack.get_path("hmm_measurements")
+            #path = path + "/yaml/"
+            file = open(file_name,'a')
             print "average CPU percentage is: " + str(cpu/count)
             print "average Memory percentage is: " + str(mem/count)
-            file.write("cpu_mean"+str(cpu/count)+"\n");
-            file.write("mem_mean"+str(mem/count));
+            print "mem_info: " + str(process.memory_info())
+            now = datetime.now()
+            current_time = now.strftime("%H:%M:%S")
+            file.write(str(current_time) + ": " + str(process.memory_info())+ "\n")
+            file.write(str(current_time) + ": mem_percentage:" + str(process.memory_percent()) + "\n") 
+            #file.write("cpu_mean"+str(cpu/count)+"\n");
+            #file.write("mem_mean"+str(mem/count));
             file.close()
 
 
